@@ -38,27 +38,8 @@ static blockPtr base=0;
 static blockPtr last;
 
 
-/**
- * @name    embedded_malloc
- * @brief   Allocate at least size contiguous bytes of memory and return a pointer to the first byte.
- *
- * This function should behave similar to a normal malloc implementation. 
- *
- * @param size_t size Number of bytes to allocate.
- * @retval Pointer to the start of the allocated memory.
- *
- */
 
 
-/**
- * @name    embedded_free
- * @brief   Frees previously allocated memory and make it available for subsequent calls to embedded_malloc
- *
- * This function should behave similar to a normal free implementation. 
- *
- * @param void *ptr Pointer to the memory to free.
- *
- */
 char isValid(char* ptr) { 
   blockPtr block= (blockPtr)(ptr-BLOCKSIZE);
   if( block->full==1 && 
@@ -128,6 +109,15 @@ blockPtr splitMemory(blockPtr current ,size_t size) {
 }
 
 
+/**
+ * @name    embedded_free
+ * @brief   Frees previously allocated memory and make it available for subsequent calls to embedded_malloc
+ *
+ * This function should behave similar to a normal free implementation. 
+ *
+ * @param void *ptr Pointer to the memory to free.
+ *
+ */
 
  void embedded_free(void * ptr) {
 
@@ -169,14 +159,29 @@ blockPtr splitMemory(blockPtr current ,size_t size) {
 
 }
 
+/**
+ * @name    embedded_malloc
+ * @brief   Allocate at least size contiguous bytes of memory and return a pointer to the first byte.
+ *
+ * This function should behave similar to a normal malloc implementation. 
+ *
+ * @param size_t size Number of bytes to allocate.
+ * @retval Pointer to the start of the allocated memory.
+ *
+ */
 
 
 void* embedded_malloc(size_t _size) {
-  /* if(!isInitialized) */
-  /*   initialize(); */
-  size_t size=((_size-1)/4)*4+4;
+  
+  register int t= (_size & 0x1f);
+  size_t size = t==0 ? _size : _size + 32 - t;
   blockPtr p = findPlace(size), found;
-  if(p == 0) { 
+  if(p == 0) { /*checking if it fits */
+    register int a = ALLOCATE_SIZE - (last-base)-BLOCKSIZE;
+    if(last!=0)
+      a-=last->size+BLOCKSIZE;
+    if(size > a)
+      return 0;
    found= extendMemory(size); 
   }
   else {
@@ -185,7 +190,4 @@ void* embedded_malloc(size_t _size) {
   found->full=1;
   return (void*)((char *)found + BLOCKSIZE);
 
-/**
- * \todo { Implement malloc here. }
-*/
 }

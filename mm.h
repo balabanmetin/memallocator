@@ -32,7 +32,7 @@ typedef struct block * blockPtr;
  *
  */
 #define ALLOCATE_SIZE    32*1024*1024
-#define BLOCKSIZE 16
+#define BLOCKSIZE 32
 
 /**
  * @name    embedded_malloc

@@ -193,6 +193,22 @@ START_TEST (test_6) {
 }
 END_TEST
 
+START_TEST (test_7) {
+  
+  int *ptr1;
+  ptr1=embedded_malloc(784329398);
+  ck_assert(ptr1==0);
+}
+END_TEST
+
+START_TEST (test_8) {
+  
+  int *ptr1;
+  ptr1=embedded_malloc(ALLOCATE_SIZE-BLOCKSIZE);
+  ck_assert(ptr1!=0);
+}
+END_TEST
+
 /* XOR a block of memory */
 uint32_t sum_block(uint32_t *data, uint32_t size) {
   uint32_t sum = 0;
@@ -264,7 +280,7 @@ START_TEST (test_memory_exerciser) {
 #endif
 
       if ((uint32_t) blocks[clock].data & 0x1f) {
-	printf("Unaligned address %p (of %p) returned!\n", blocks[clock].data, addr);
+	printf("Unaligned address %xd (of %xd) returned!\n", blocks[clock].data, addr);
 	ck_assert(0);
       }
 
@@ -381,6 +397,9 @@ Suite* embedded_malloc_suite() {
    tcase_add_test (tc_core, test_4);
    tcase_add_test (tc_core, test_5);
    tcase_add_test (tc_core, test_6);
+   tcase_add_test (tc_core, test_7);
+   tcase_add_test (tc_core, test_8);
+   tcase_set_timeout(tc_core, 0);
    tcase_add_test (tc_core, test_memory_exerciser);
 
 
