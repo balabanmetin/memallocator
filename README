@@ -1,0 +1,3 @@
+1.Open a terminal in current dir.
+2.Type make and press enter.
+3.To run tests, in the same terminal, type ./run_tests.Then press enter. 
